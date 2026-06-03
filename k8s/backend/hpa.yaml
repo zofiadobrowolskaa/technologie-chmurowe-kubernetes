@@ -1,0 +1,22 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+spec:
+  # wskazuje na deployment backendu - hpa będzie skalował jego repliki
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  # minimalna liczba replik - zawsze działają co najmniej 2 instancje
+  minReplicas: 2
+  # maksymalna liczba replik - hpa nie przekroczy tej liczby
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # gdy średnie użycie cpu przekroczy 60%, hpa doda nowe repliki
+          averageUtilization: 60
