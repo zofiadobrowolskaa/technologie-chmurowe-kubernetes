@@ -1,4 +1,3 @@
-/* prosty, czytelny styl interfejsu */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -15,7 +14,6 @@ body {
 
 h1 { margin-bottom: 1.5rem; }
 
-/* formularz dodawania zadania */
 .task-form {
   display: flex;
   gap: 0.5rem;
@@ -41,7 +39,6 @@ h1 { margin-bottom: 1.5rem; }
   cursor: pointer;
 }
 
-/* lista zadań */
 .task-list { list-style: none; }
 
 .task-item {
@@ -58,7 +55,6 @@ h1 { margin-bottom: 1.5rem; }
 .task-title { font-weight: 600; }
 .task-desc { color: #6b778c; flex: 1; }
 
-/* kolorowa etykieta priorytetu */
 .badge {
   padding: 0.2rem 0.6rem;
   border-radius: 999px;

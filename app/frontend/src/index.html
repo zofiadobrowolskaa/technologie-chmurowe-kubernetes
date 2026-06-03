@@ -10,11 +10,9 @@
   <main class="container">
     <h1>Task Manager</h1>
 
-    <!-- formularz dodawania nowego zadania z wyborem priorytetu -->
     <form id="task-form" class="task-form">
       <input type="text" id="title" placeholder="Tytuł zadania" required>
       <input type="text" id="description" placeholder="Opis (opcjonalnie)">
-      <!-- wybór priorytetu: low / medium / high -->
       <select id="priority">
         <option value="low">niski</option>
         <option value="medium" selected>średni</option>
@@ -23,7 +21,6 @@
       <button type="submit">Dodaj</button>
     </form>
 
-    <!-- tutaj skrypt wstawia listę zadań pobraną z backendu -->
     <ul id="task-list" class="task-list"></ul>
   </main>
 
