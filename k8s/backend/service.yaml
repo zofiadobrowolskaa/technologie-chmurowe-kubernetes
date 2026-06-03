@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  # NodePort - udostępnia port na węźle klastra, używany do testów lokalnych
-  type: NodePort
+  # ClusterIP - backend dostępny wewnątrz klastra, ruch z zewnątrz wchodzi przez ingress
+  type: ClusterIP
+  # selektor wskazuje na blue - przełączenie na green to zmiana version: green
   selector:
     app: backend
+    version: blue
   ports:
     - port: 8080
       targetPort: 8080
-      # stały port węzła
-      nodePort: 30080

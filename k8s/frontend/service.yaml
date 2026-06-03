@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  # ClusterIP - ruch z zewnątrz wchodzi przez Ingress, który kieruje / do frontendu
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80

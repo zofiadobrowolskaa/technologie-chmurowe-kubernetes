@@ -1,0 +1,72 @@
+/* prosty, czytelny styl interfejsu */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f4f5f7;
+  color: #172b4d;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+h1 { margin-bottom: 1.5rem; }
+
+/* formularz dodawania zadania */
+.task-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.task-form input,
+.task-form select,
+.task-form button {
+  padding: 0.6rem;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.task-form input[type="text"]:first-child { flex: 1 1 100%; }
+
+.task-form button {
+  background: #0052cc;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* lista zadań */
+.task-list { list-style: none; }
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  padding: 0.85rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.task-title { font-weight: 600; }
+.task-desc { color: #6b778c; flex: 1; }
+
+/* kolorowa etykieta priorytetu */
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge-low { background: #36b37e; }
+.badge-medium { background: #ffab00; }
+.badge-high { background: #ff5630; }
