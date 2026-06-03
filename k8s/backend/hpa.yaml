@@ -3,11 +3,11 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: backend-hpa
 spec:
-  # wskazuje na deployment backendu - hpa będzie skalował jego repliki
+  # wskazuje na aktywny deployment backendu (blue) - hpa będzie skalował jego repliki
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: backend
+    name: backend-blue
   # minimalna liczba replik - zawsze działają co najmniej 2 instancje
   minReplicas: 2
   # maksymalna liczba replik - hpa nie przekroczy tej liczby

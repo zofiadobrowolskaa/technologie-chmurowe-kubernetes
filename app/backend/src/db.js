@@ -10,14 +10,21 @@ const pool = new Pool({
 
 // inicjalizacja bazy
 async function initDB() {
+  // v2 — tabela zawiera kolumnę priority (low/medium/high, domyślnie medium)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS tasks (
       id          SERIAL PRIMARY KEY,
       title       TEXT NOT NULL,
       description TEXT,
       status      TEXT NOT NULL DEFAULT 'pending',
+      priority    TEXT NOT NULL DEFAULT 'medium',
       created_at  TIMESTAMP NOT NULL DEFAULT NOW()
     )
+  `);
+  // zabezpieczenie wstecznej kompatybilności — gdy tabela powstała w v1 bez priority,
+  // dodajemy kolumnę bez utraty istniejących danych
+  await pool.query(`
+    ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'medium'
   `);
 }
 

@@ -1,26 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  # blue - aktualna, stabilna wersja backendu (v1)
-  name: backend-blue
+  # green - wersja backendu (v2) z obsługą priorytetów
+  name: backend-green
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: backend
-      version: blue
+      version: green
   template:
     metadata:
       labels:
         app: backend
-        # etykieta version pozwala service kierować ruch wybiórczo do blue albo green
-        version: blue
+        # version: green - service przełącza ruch na te pody zmianą selektora
+        version: green
     spec:
       containers:
         - name: backend
-          # wersja v1.0.0 - bez obsługi priorytetów
-          image: ghcr.io/zofiadobrowolskaa/technologie-chmurowe-kubernetes/backend:v1.0.0
-          # IfNotPresent - używa obrazu załadowanego lokalnie do kind, nie pobiera z registry
+          # wersja v2.0.0 - dodaje pole priority i version w /health
+          image: ghcr.io/zofiadobrowolskaa/technologie-chmurowe-kubernetes/backend:v2.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

@@ -4,14 +4,20 @@ const { pool, initDB, checkConnection } = require('./db');
 const app = express();
 const PORT = 8080;
 
+// wersja aplikacji — v2 dodaje obsługę priorytetów zadań
+const APP_VERSION = '2.0.0';
+// dozwolone wartości priorytetu
+const PRIORITIES = ['low', 'medium', 'high'];
+
 app.use(express.json());
 
 app.get('/health', async (req, res) => {
   try {
     await checkConnection();
-    res.status(200).json({ status: 'ok', database: 'connected' });
+    // v2 zwraca dodatkowo numer wersji — pozwala potwierdzić blue-green deployment
+    res.status(200).json({ status: 'ok', database: 'connected', version: APP_VERSION });
   } catch (err) {
-    res.status(503).json({ status: 'error', database: 'disconnected' });
+    res.status(503).json({ status: 'error', database: 'disconnected', version: APP_VERSION });
   }
 });
 
@@ -28,15 +34,24 @@ app.get('/tasks', async (req, res) => {
 // tworzy nowe zadanie na podstawie danych z body
 app.post('/tasks', async (req, res) => {
   const { title, description } = req.body;
+  // v2 — priorytet jest opcjonalny, domyślnie medium
+  let { priority } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: 'pole title jest wymagane' });
   }
 
+  // walidacja priorytetu — dozwolone tylko low/medium/high
+  if (!priority) {
+    priority = 'medium';
+  } else if (!PRIORITIES.includes(priority)) {
+    return res.status(400).json({ error: 'priority musi być low, medium lub high' });
+  }
+
   try {
     const result = await pool.query(
-      'INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *',
-      [title, description || null]
+      'INSERT INTO tasks (title, description, priority) VALUES ($1, $2, $3) RETURNING *',
+      [title, description || null, priority]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

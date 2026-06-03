@@ -3,7 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    # pipeline uruchamia się też przy pushu taga wersji (np. v2.0.0)
+    tags: ['v*']
 
+# jawne uprawnienia wymagane przez ghcr.io — bez packages:write token nie może pushować obrazów
 permissions:
   contents: read
   packages: write
@@ -12,6 +15,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     env:
+      # wymuszenie Node.js 24 dla actions — Node 20 jest deprecated od czerwca 2026
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
@@ -24,12 +28,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Wygeneruj tagi obrazu
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/backend
+          # tagi: zawsze SHA commita, na pushu taga dodatkowo wersja (v2.0.0), na main latest
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: Zbuduj i opublikuj obraz
         uses: docker/build-push-action@v6
         with:
           context: ./app/backend
           push: true
-          tags: ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
 
       - name: Uruchom klaster kind
         uses: helm/kind-action@v1
@@ -47,13 +62,17 @@ jobs:
         run: |
           kubectl apply -f k8s/postgres/
           kubectl apply -f k8s/backend/
-          kubectl set image deployment/backend \
+          # podmieniamy obraz w obu deploymentach blue-green na świeżo zbudowany
+          kubectl set image deployment/backend-blue \
+            backend=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+          kubectl set image deployment/backend-green \
             backend=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
       - name: Poczekaj na gotowość Podów
         run: |
           kubectl rollout status deployment/postgres --timeout=120s
-          kubectl rollout status deployment/backend --timeout=120s
+          kubectl rollout status deployment/backend-blue --timeout=120s
+          kubectl rollout status deployment/backend-green --timeout=120s
 
       - name: Test HTTP
         run: |
